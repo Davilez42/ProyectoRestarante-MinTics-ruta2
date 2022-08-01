@@ -48,11 +48,11 @@ enum EstadoPedido{
 
 
 Mesa o--"1.." Pedido
-corrientazo --"1" OpcionCarne
-corrientazo --"1" OpcionSopa
-corrientazo --"0,1" OpcionEnsalada
-corrientazo --"1" OpcionPrincipio
-corrientazo --"1" OpcionJugo
+corrientazo"*" *--"1" OpcionCarne
+corrientazo "*"*--"1" OpcionSopa
+corrientazo "*"--"0,1" OpcionEnsalada
+corrientazo "*" *--"1" OpcionPrincipio
+corrientazo "*"*--"1" OpcionJugo
 Pedido *-- PedidoAdicional
 Pedido *-- corrientazo
 
