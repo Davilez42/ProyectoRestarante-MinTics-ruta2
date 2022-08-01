@@ -1,62 +1,98 @@
 @startuml "Diagrama Relacional"
 
-class OpcionSopa {
-    String nombre
-}
-class OpcionCarne {
-    String nombre
-}
-class OpcionPrincipio {
-    String nombre
-}
-class OpcionJugo {
-    String nombre
-}
-class OpcionEnsalada {
-    String nombre
+Entity Mesa{
+    integer: id >PK<
+    --
+    numero: varchar(10) <<NL>> <<UQ>>
+    
 }
 
-class PedidoAdicional{
-String nombre
-integer precio
-}
-class OpcionCarne {
-    String nombre
-}
-
-class Mesa{
-    - String numero
-    + integer calcularValorMesa()
-    + integer pagar(Integer efectivo)
-
+Entity Pedido{
+    id:integer <<PK>>
+    --
+    cliente:varchar(100) 
+    --
+    estado:varchar(100)
+    --
+    id_mesa:integer <<FK>>
+    --
+    id_adicional <<FK>> 
 }
 
-class corrientazo{
-   + integer precio
+Entity Adicional{
+    id:integer <<PK>>
+    --
+    nombre:varchar(100)
+    precio:integer 
+}
+
+Entity PedidoAdicional{
+    id_pedido:integer <<PK>> <<FK>>
+    id_adicional:integer <<PK>> <<FK>>
+}
+
+Entity Corrientazo{
+    id_pedido:integer <<PK>> <<FK>>
+    --
+    precio:integer <<NN>>
+    id_Carne:integer <<FK>>
+    id_Sopa:integer <<FK>>
+    id_Principio:integer <<FK>>
+    id_Ensalada:integer <<FK>>
+    id_Jugo:integer <<FK>>
+    
+}
+
+Entity OpcionSopa {
+    id:integer <<PK>>
+    --
+    nombre:varchar(100) <<NN>>
+}
+
+Entity OpcionPrincipio {
+    id:integer <<PK>>
+    --
+     nombre:varchar(100) <<NN>>
+}
+Entity OpcionJugo {
+    id:integer <<PK>>
+    --
+     nombre:varchar(100) <<NN>>
+}
+Entity OpcionEnsalada {
+    id:integer <<PK>>
+    --
+     nombre:varchar(100) <<NN>>
 }
 
 
-class Pedido{
-+ integer calcularValorPedido()
+Entity OpcionCarne {
+    id:integer <<PK>>
+    --
+     nombre:varchar(100) <<NN>>
 }
 
-enum EstadoPedido{
-    SIN_ENTREGAR,
-    PENDIENTE_COBRAR,
+Mesa ||--o{ Pedido
+Pedido ||--|{PedidoAdicional
+Adicional ||--|{PedidoAdicional 
+Corrientazo }|--||Pedido
+Corrientazo }|--|| OpcionCarne
+Corrientazo }|--o| OpcionEnsalada
+Corrientazo }|--|| OpcionJugo
+Corrientazo }|--|| OpcionPrincipio
+Corrientazo }|--|| OpcionSopa
 
-}
 
 
-Mesa o--"1.." Pedido
-corrientazo"*" *--"1" OpcionCarne
-corrientazo "*"*--"1" OpcionSopa
-corrientazo "*"--"0,1" OpcionEnsalada
-corrientazo "*" *--"1" OpcionPrincipio
-corrientazo "*"*--"1" OpcionJugo
-Pedido *-- PedidoAdicional
-Pedido *-- corrientazo
 
-Pedido .. EstadoPedido
+
+
+
+
+
+
+
+
 
 
 
