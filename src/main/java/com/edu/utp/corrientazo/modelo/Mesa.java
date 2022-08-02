@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.naming.spi.DirStateFactory.Result;
 
+import com.edu.utp.corrientazo.exception.PagoExcepcion;
+
 /**
  * Mesa
  */
@@ -27,14 +29,11 @@ public class Mesa {
 
 
     public Integer calcularValorMesa() {
-        var total = 0;
-        if (!pedidos.isEmpty()) {
-            for (Pedido pedido : pedidos) {
-                total += pedido.calcularValorPedido();
-            }
-            
-        }
-        return total;
+     
+        return pedidos.stream()
+        .filter(Pedido->Pedido.getEstado()==EstadoPedido.PENDIENTE_COBRAR)
+        .map(Pedido->Pedido.calcularValorPedido())
+        .reduce((a,b)-> a+b).orElse(0);
     }
 
     public Integer pagar(Integer efectivo) throws PagoExcepcion {
