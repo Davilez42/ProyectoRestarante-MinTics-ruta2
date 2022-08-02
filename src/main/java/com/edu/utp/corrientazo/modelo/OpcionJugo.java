@@ -12,4 +12,10 @@ public class OpcionJugo {
         this.nombre = nombre;
     }
     
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return getNombre();
+    }
+    
 }

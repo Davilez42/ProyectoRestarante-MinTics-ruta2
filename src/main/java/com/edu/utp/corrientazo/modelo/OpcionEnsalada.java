@@ -12,5 +12,12 @@ public class OpcionEnsalada {
         return nombre;
     }
 
+    
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return getNombre();
+    }
+
 
 }

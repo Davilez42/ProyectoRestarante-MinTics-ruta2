@@ -1,4 +1,4 @@
-package com.edu.utp.corrientazo.modelo;
+package com.edu.utp.corrientazo.exception;
 
 public class PagoExcepcion extends Exception {
 

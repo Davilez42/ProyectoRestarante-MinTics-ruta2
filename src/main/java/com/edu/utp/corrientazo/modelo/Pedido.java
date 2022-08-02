@@ -56,6 +56,12 @@ public class Pedido {
         return estado;
     }
 
-  
+    @Override
+    public String toString() {
+        return "Pedido [Cliente=" + Cliente + ", adicionales=" + adicionales + ", almuerzo=" + almuerzo + ", estado="
+                + estado + "]";
+    }
+
+    
     
 }

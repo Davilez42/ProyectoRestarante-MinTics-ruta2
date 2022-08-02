@@ -18,6 +18,12 @@ public class PedidoAdicional {
         return precio;
     }
  
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return getNombre();
+    }
+    
 
     
 }

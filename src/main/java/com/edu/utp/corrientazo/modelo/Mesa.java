@@ -23,30 +23,23 @@ public class Mesa {
 
     
     public Mesa(String numero) {
-        this(numero,new ArrayList<>());
+        this.numero = numero;
+        pedidos = new ArrayList<>();
     }
 
 
 
     public Integer calcularValorMesa() {
      
-        return pedidos.stream()
-        .filter(Pedido->Pedido.getEstado()==EstadoPedido.PENDIENTE_COBRAR)
-        .map(Pedido->Pedido.calcularValorPedido())
-        .reduce((a,b)-> a+b).orElse(0);
+        var total = pedidos.stream()
+                .filter(Pedido -> Pedido.getEstado() == EstadoPedido.PENDIENTE_COBRAR)
+                .map(Pedido -> Pedido.calcularValorPedido())
+                .reduce((a, b) -> a + b)
+                .orElse(0);
+        return total;
     }
 
-    public Integer pagar(Integer efectivo) throws PagoExcepcion {
-
-        if (efectivo >= calcularValorMesa()) {
-            var devuelta = efectivo - calcularValorMesa();
-            pedidos.clear();
-            return devuelta;
-        }
-        else{
-            throw new PagoExcepcion();
-        }
-    }
+   
 
     public void agregarPedido(Pedido p){
         pedidos.add(p);
@@ -63,5 +56,18 @@ public class Mesa {
     public void setPedidos(List<Pedido> pedidos) {
         this.pedidos = pedidos;
     }
+
+
+    @Override
+    public String toString() {
+        return "Mesa [numero=" + numero + "]";
+    }
+
+
+    public void limpiarPedidos() {
+        pedidos.clear();
+    }
+
+   
 
 }
