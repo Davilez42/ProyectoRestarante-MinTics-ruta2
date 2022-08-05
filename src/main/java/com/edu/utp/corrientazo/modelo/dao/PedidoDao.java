@@ -19,6 +19,7 @@ import com.edu.utp.corrientazo.modelo.OpcionJugo;
 import com.edu.utp.corrientazo.modelo.OpcionPrincipio;
 import com.edu.utp.corrientazo.modelo.OpcionSopa;
 import com.edu.utp.corrientazo.modelo.Pedido;
+import com.edu.utp.corrientazo.modelo.PedidoAdicional;
 import com.edu.utp.corrientazo.util.JDBCutilites;
 
 public class PedidoDao {
@@ -27,7 +28,9 @@ public class PedidoDao {
         List<Pedido> respuesta = null;
         Connection connection = null;
         PreparedStatement pstament = null;//
+        PreparedStatement pstament2 = null;//
         ResultSet rst = null;
+        ResultSet rst2 = null;
         try {
             respuesta = new ArrayList<>();
             connection = JDBCutilites.getConnection();
@@ -69,6 +72,20 @@ public class PedidoDao {
                 var pedido = new Pedido(rst.getString("cliente"), almuerzo);
                 pedido.setId(rst.getInt("id_pedido"));
                 pedido.setEstado(EstadoPedido.valueOf(rst.getString("estado")));
+
+                pstament2 = JDBCutilites.getConnection().prepareStatement("SELECT id_adicional , a.nombre ,a.precio"
+                        + " from PedidoAdicional pa"
+                        + " join Adicional a on(pa.id_adicional = a.id)"
+                        + " where pa.id_pedido = ?;");
+                pstament2.setInt(1, pedido.getId());
+                rst2 = pstament2.executeQuery();
+
+                while (rst2.next()) {
+                    var adicional = new PedidoAdicional(rst2.getString("nombre"), rst2.getInt("precion"));
+                    adicional.setId(rst2.getInt("id_adicional"));
+                    pedido.agregaradicionales(adicional);
+                }
+
                 respuesta.add(pedido);
             }
 
@@ -91,8 +108,6 @@ public class PedidoDao {
     public void guardar(Mesa mesa, Pedido pedido) throws SQLException {
         PreparedStatement pstatement1 = null;
         PreparedStatement pstatement2 = null;
-        PreparedStatement pstatement3 = null;
-        PreparedStatement pstatement4 = null;
         Connection connection = null;
         try {
             pedido.setId(generarConsecutivo("Pedidos"));// genrara id del pedido
@@ -119,19 +134,6 @@ public class PedidoDao {
             }
 
             pstatement2.executeUpdate();
-
-            /*
-             * TODO
-             * if(pedido.getAdicionales().size()>0){
-             * pstatement3 = JDBCutilites.getConnection().
-             * prepareStatement("INSERT into PedidoAdicional(id_pedido,id_adicional) VALUES(?,?)"
-             * );
-             * pstatement3.setInt(1, pedido.getId());
-             * pstatement3.setInt(2, generarConsecutivo("PedidoAdicional"));
-             * pstatement4 = JDBCutilites.getConnection().
-             * prepareStatement("INSERT into Adicinal(id,nombre) VALUES(?,?)");
-             * }
-             */
 
         } finally {
             if (connection != null) {
@@ -231,6 +233,36 @@ public class PedidoDao {
                 connection.close();
             }
 
+        }
+    }
+
+    public void guardarAdicionales(Mesa mesa, Pedido pedido) throws SQLException {
+        PreparedStatement pstatement4 = null;
+        PreparedStatement pstatement3 = null;
+        try {
+
+            pstatement3 = JDBCutilites.getConnection()
+                    .prepareStatement("INSERT into Adicional(id,precio,nombre) VALUES(?,?,?)");
+            pedido.getAdicionales().get(0).setId(generarConsecutivo("Adicional"));
+            pstatement3.setInt(1, pedido.getAdicionales().get(0).getId());
+            pstatement3.setInt(2, pedido.getAdicionales().get(0).getPrecio());
+            pstatement3.setString(3, pedido.getAdicionales().get(0).getNombre());
+            pstatement3.executeUpdate();
+
+            pstatement4 = JDBCutilites.getConnection()
+                    .prepareStatement("INSERT into PedidoAdicional(id_pedido,id_adicional) VALUES(?,?)");
+            pstatement4.setInt(1, pedido.getId());
+            pstatement4.setInt(2, pedido.getAdicionales().get(0).getId());
+
+            pstatement4.executeUpdate();
+
+        } finally {
+            if (pstatement3 != null) {
+                pstatement3.close();
+            }
+            if (pstatement4 != null) {
+                pstatement4.close();
+            }
         }
     }
 }
