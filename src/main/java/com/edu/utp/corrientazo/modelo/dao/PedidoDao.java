@@ -244,7 +244,7 @@ public class PedidoDao {
             pstatement3 = JDBCutilites.getConnection()
                     .prepareStatement("INSERT into Adicional(id,precio,nombre) VALUES(?,?,?)");
             pedido.getAdicionales().get(0).setId(generarConsecutivo("Adicional"));
-            var indice_ultimo = pedido.getAdicionales().size();
+            var indice_ultimo = pedido.getAdicionales().size()-1;
             pstatement3.setInt(1, pedido.getAdicionales().get(indice_ultimo).getId());
             pstatement3.setInt(2, pedido.getAdicionales().get(indice_ultimo).getPrecio());
             pstatement3.setString(3, pedido.getAdicionales().get(indice_ultimo).getNombre());
