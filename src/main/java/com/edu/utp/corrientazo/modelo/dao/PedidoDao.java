@@ -81,7 +81,7 @@ public class PedidoDao {
                 rst2 = pstament2.executeQuery();
 
                 while (rst2.next()) {
-                    var adicional = new PedidoAdicional(rst2.getString("nombre"), rst2.getInt("precion"));
+                    var adicional = new PedidoAdicional(rst2.getString("nombre"), rst2.getInt("precio"));
                     adicional.setId(rst2.getInt("id_adicional"));
                     pedido.agregaradicionales(adicional);
                 }
@@ -244,15 +244,16 @@ public class PedidoDao {
             pstatement3 = JDBCutilites.getConnection()
                     .prepareStatement("INSERT into Adicional(id,precio,nombre) VALUES(?,?,?)");
             pedido.getAdicionales().get(0).setId(generarConsecutivo("Adicional"));
-            pstatement3.setInt(1, pedido.getAdicionales().get(0).getId());
-            pstatement3.setInt(2, pedido.getAdicionales().get(0).getPrecio());
-            pstatement3.setString(3, pedido.getAdicionales().get(0).getNombre());
+            var indice_ultimo = pedido.getAdicionales().size();
+            pstatement3.setInt(1, pedido.getAdicionales().get(indice_ultimo).getId());
+            pstatement3.setInt(2, pedido.getAdicionales().get(indice_ultimo).getPrecio());
+            pstatement3.setString(3, pedido.getAdicionales().get(indice_ultimo).getNombre());
             pstatement3.executeUpdate();
 
             pstatement4 = JDBCutilites.getConnection()
                     .prepareStatement("INSERT into PedidoAdicional(id_pedido,id_adicional) VALUES(?,?)");
             pstatement4.setInt(1, pedido.getId());
-            pstatement4.setInt(2, pedido.getAdicionales().get(0).getId());
+            pstatement4.setInt(2, pedido.getAdicionales().get(indice_ultimo).getId());
 
             pstatement4.executeUpdate();
 
