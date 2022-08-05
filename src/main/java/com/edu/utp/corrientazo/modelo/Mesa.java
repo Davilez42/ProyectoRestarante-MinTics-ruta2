@@ -12,7 +12,7 @@ import com.edu.utp.corrientazo.exception.PagoExcepcion;
  * Mesa
  */
 public class Mesa {
-
+    private Integer id;
     private String numero;
     private List<Pedido> pedidos;
 
@@ -29,15 +29,16 @@ public class Mesa {
 
 
 
-    public Integer calcularValorMesa() {
-     
-        var total = pedidos.stream()
-                .filter(Pedido -> Pedido.getEstado() == EstadoPedido.PENDIENTE_COBRAR)
-                .map(Pedido -> Pedido.calcularValorPedido())
-                .reduce((a, b) -> a + b)
-                .orElse(0);
-        return total;
+    public Integer getId() {
+        return id;
     }
+
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+
 
    
 

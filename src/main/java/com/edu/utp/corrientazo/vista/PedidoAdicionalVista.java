@@ -3,7 +3,7 @@ package com.edu.utp.corrientazo.vista;
 import java.util.Scanner;
 
 import com.edu.utp.corrientazo.controlador.Controlador;
-import com.edu.utp.corrientazo.modelo.Pedido;
+
 import com.edu.utp.corrientazo.modelo.PedidoAdicional;
 
 public class PedidoAdicionalVista {

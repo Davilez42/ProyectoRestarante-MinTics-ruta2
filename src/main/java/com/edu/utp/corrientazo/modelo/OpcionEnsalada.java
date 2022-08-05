@@ -1,8 +1,17 @@
 package com.edu.utp.corrientazo.modelo;
 
 public class OpcionEnsalada {
-    String nombre;
+    private Integer id;
+    private String nombre;
     
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public OpcionEnsalada(String nombre) {
         this.nombre = nombre;

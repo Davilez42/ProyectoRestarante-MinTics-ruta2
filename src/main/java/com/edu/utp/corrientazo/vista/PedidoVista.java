@@ -1,11 +1,11 @@
 package com.edu.utp.corrientazo.vista;
 
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import com.edu.utp.corrientazo.controlador.Controlador;
 import com.edu.utp.corrientazo.modelo.Corrientazo;
-import com.edu.utp.corrientazo.modelo.Mesa;
 import com.edu.utp.corrientazo.modelo.OpcionCarne;
 import com.edu.utp.corrientazo.modelo.OpcionEnsalada;
 import com.edu.utp.corrientazo.modelo.OpcionJugo;
@@ -26,7 +26,7 @@ public class PedidoVista {
         this.c = c;
     }
 
-    public Pedido pedirInformacionPedido() {
+    public Pedido pedirInformacionPedido() throws SQLException {
         
         System.out.print("Porfavor Ingrese el nombre:");
         var nombre = sc.nextLine();
@@ -43,7 +43,7 @@ public class PedidoVista {
 
 
 
-    private OpcionSopa elegirSopa(){
+    private OpcionSopa elegirSopa() throws SQLException{
         var opciones = c.getSopas();
         OpcionSopa resultado = null;
         System.out.println("ELIGA LA SOPA");
@@ -76,7 +76,7 @@ public class PedidoVista {
         return resultado;
     }
 
-    private OpcionCarne elegirCarne(){
+    private OpcionCarne elegirCarne() throws SQLException{
         var opciones = c.getCarnes();
         OpcionCarne resultado = null;
         System.out.println("ELIGA LA CARNE");
@@ -108,7 +108,7 @@ public class PedidoVista {
 
         return resultado;
     }
-    private OpcionPrincipio elegirPrincipio(){
+    private OpcionPrincipio elegirPrincipio() throws SQLException{
         var opciones = c.getPrincipios();
         OpcionPrincipio resultado = null;
         System.out.println("ELIGA EL PRINCIPIO");
@@ -141,7 +141,7 @@ public class PedidoVista {
         return resultado;
     }
 
-    private OpcionJugo elegirJugo(){
+    private OpcionJugo elegirJugo() throws SQLException{
         var opciones = c.getJugos();
         OpcionJugo resultado = null;
         System.out.println("ELIGA EL JUGO");
@@ -174,7 +174,7 @@ public class PedidoVista {
         return resultado;
     }
 
-    private OpcionEnsalada elegirEnsalada(){
+    private OpcionEnsalada elegirEnsalada() throws SQLException{
         var opciones = c.getEnsaladas();
         OpcionEnsalada resultado = null;
         System.out.println("ELIGA LA ENSALADA");

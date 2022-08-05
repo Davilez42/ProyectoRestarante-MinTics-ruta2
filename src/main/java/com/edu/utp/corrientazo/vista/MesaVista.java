@@ -1,10 +1,11 @@
 package com.edu.utp.corrientazo.vista;
 
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.sound.sampled.SourceDataLine;
+
 
 import com.edu.utp.corrientazo.controlador.Controlador;
 import com.edu.utp.corrientazo.modelo.Mesa;
@@ -32,7 +33,7 @@ public class MesaVista {
         listamesas.forEach(System.out::println);
     }
 
-    public Mesa consultarMesa() {
+    public Mesa consultarMesa() throws SQLException {
         var mesas = c.getListamesas();
         Mesa resultado = null;
 
@@ -64,8 +65,8 @@ public class MesaVista {
         return resultado;
     }
 
-    public Pedido consultarPedidos(Mesa mesa) {
-        var pedidos = mesa.getPedidos();
+    //para entregar un pedido
+    public Pedido consultarPedidos(List<Pedido> pedidos) {
         Pedido resultado = null;
         System.out.println("ELIJA UN PEDIDO A ENTREGAR");
 
@@ -97,8 +98,7 @@ public class MesaVista {
         return resultado;
     }
 
-    public void mostrarPedidos(Mesa mesa) {
-        var pedidos = mesa.getPedidos();
+    public void mostrarPedidos(List<Pedido> pedidos) {
         System.out.println("Los pedidos existentes son:");
         for (int i = 0; i < pedidos.size(); i++) {
             System.out.printf("%d -> %s %n", i + 1, pedidos.get(i));

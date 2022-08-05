@@ -1,5 +1,6 @@
 package com.edu.utp.corrientazo.vista;
 
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -14,7 +15,7 @@ public class MenuPrincipal {
         this.c = c;
     }
 
-    public void iniciarAplicacion() {
+    public void iniciarAplicacion() throws SQLException {
         System.out.println("---------MENU PRINCIPAL----");
         var enMenu = true;
         do {
@@ -103,13 +104,13 @@ public class MenuPrincipal {
 
     }
 
-    private void pagosMesa() {
+    private void pagosMesa() throws SQLException {
         var mesa = c.consultarMesa();
         c.pagoDeMesa(mesa);
 
     }
 
-    private void abrirMenuGestionPedidos() {
+    private void abrirMenuGestionPedidos() throws SQLException {
         var mesa = c.consultarMesa();
         var salida = false;
         while(!salida){

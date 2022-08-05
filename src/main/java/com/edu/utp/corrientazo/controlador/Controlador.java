@@ -1,10 +1,14 @@
 package com.edu.utp.corrientazo.controlador;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import com.edu.utp.corrientazo.exception.PagoExcepcion;
+import com.edu.utp.corrientazo.modelo.EstadoPedido;
 import com.edu.utp.corrientazo.modelo.Mesa;
 import com.edu.utp.corrientazo.modelo.OpcionCarne;
 import com.edu.utp.corrientazo.modelo.OpcionEnsalada;
@@ -12,7 +16,10 @@ import com.edu.utp.corrientazo.modelo.OpcionJugo;
 import com.edu.utp.corrientazo.modelo.OpcionPrincipio;
 import com.edu.utp.corrientazo.modelo.OpcionSopa;
 import com.edu.utp.corrientazo.modelo.Pedido;
-import com.edu.utp.corrientazo.modelo.PedidoAdicional;
+
+import com.edu.utp.corrientazo.modelo.dao.MesaDao;
+import com.edu.utp.corrientazo.modelo.dao.OpcionAlimentoDao;
+import com.edu.utp.corrientazo.modelo.dao.PedidoDao;
 import com.edu.utp.corrientazo.vista.MenuPrincipal;
 import com.edu.utp.corrientazo.vista.MesaVista;
 import com.edu.utp.corrientazo.vista.PedidoAdicionalVista;
@@ -23,15 +30,15 @@ public class Controlador {
     private PedidoVista pedidovista;
     private MenuPrincipal menuPrincipal;
     private PedidoAdicionalVista pedidoAdicionalVista;
-    private List<Mesa> listamesas;
+    // comunicacion con base de datos
+    private MesaDao mesadao;
+    private OpcionAlimentoDao<OpcionSopa> sopadao;
+    private OpcionAlimentoDao<OpcionCarne> carnedao;
+    private OpcionAlimentoDao<OpcionJugo> jugodao;
+    private OpcionAlimentoDao<OpcionPrincipio> principiodao;
+    private OpcionAlimentoDao<OpcionEnsalada> ensaladadao;
 
-    /// comidas
-
-    private List<OpcionCarne> carnes;
-    private List<OpcionSopa> sopas;
-    private List<OpcionJugo> jugos;
-    private List<OpcionPrincipio> principios;
-    private List<OpcionEnsalada> ensaladas;
+    private PedidoDao pedidoDao;
 
     public Controlador(Scanner sc) {
         this.mesavista = new MesaVista(sc, this);
@@ -39,130 +46,183 @@ public class Controlador {
         this.menuPrincipal = new MenuPrincipal(sc, this);
         this.pedidoAdicionalVista = new PedidoAdicionalVista(sc, this);
 
-        this.listamesas = new ArrayList<>();
-        this.carnes = new ArrayList<>();
-        this.sopas = new ArrayList<>();
-        this.jugos = new ArrayList<>();
-        this.principios = new ArrayList<>();
-        this.ensaladas = new ArrayList<>();
+        this.mesadao = new MesaDao();
+        this.sopadao = new OpcionAlimentoDao<>("opcionesSopa");
+        this.carnedao = new OpcionAlimentoDao<>("opcionesCarne");
+        this.jugodao = new OpcionAlimentoDao<>("opcionesJugo");
+        this.principiodao = new OpcionAlimentoDao<>("opcionesPrincipio");
+        this.ensaladadao = new OpcionAlimentoDao<>("opcionesEnsalada");
+
+        this.pedidoDao = new PedidoDao();
 
     }
 
-    // TODO:SOLO PARA PRUEBAS
-    public void cargarBaseDeDatos() {
-        listamesas.add(new Mesa("01"));
-        listamesas.add(new Mesa("02"));
-        listamesas.add(new Mesa("03"));
-        listamesas.add(new Mesa("04"));
-        listamesas.add(new Mesa("05"));
+    public List<OpcionCarne> getCarnes() throws SQLException {
 
-        sopas.add(new OpcionSopa("Cordero"));
-        sopas.add(new OpcionSopa("Pollo"));
-        sopas.add(new OpcionSopa("Patacon"));
-        sopas.add(new OpcionSopa("Pescado"));
-        sopas.add(new OpcionSopa("Pajarilla"));
+        return carnedao.listar(rst -> {
 
-        carnes.add(new OpcionCarne("Cordero aumado"));
-        carnes.add(new OpcionCarne("Lomo"));
-        carnes.add(new OpcionCarne("Cerdo"));
+            try {
+                var carne = new OpcionCarne(rst.getString("nombre"));
+                carne.setId(rst.getInt("Id"));
+                return carne;
+            } catch (SQLException e) {
+                return null;
+            }
 
-        principios.add(new OpcionPrincipio("Lentejas"));
-        principios.add(new OpcionPrincipio("Frijoles"));
-        principios.add(new OpcionPrincipio("Espaguetis"));
-
-        ensaladas.add(new OpcionEnsalada("agridulce"));
-        ensaladas.add(new OpcionEnsalada("roja"));
-        ensaladas.add(new OpcionEnsalada("dulce"));
-
-        jugos.add(new OpcionJugo("lulo"));
-        jugos.add(new OpcionJugo("Guayaba"));
-        jugos.add(new OpcionJugo("limonada"));
-        jugos.add(new OpcionJugo("Aguapanela"));
-
+        });
     }
 
-    public List<OpcionCarne> getCarnes() {
-        return carnes;
+    public List<OpcionJugo> getJugos() throws SQLException {
+        return jugodao.listar(rst -> {
+            try {
+                var jugo = new OpcionJugo(rst.getString("nombre"));
+                jugo.setId(rst.getInt("id"));
+                return jugo;
+            } catch (SQLException e) {
+                return null;
+            }
+
+        });
     }
 
-    public List<OpcionJugo> getJugos() {
-        return jugos;
+    public List<OpcionSopa> getSopas() throws SQLException {
+        return sopadao.listar(rst -> {
+            try {
+                var sopa = new OpcionSopa(rst.getString("nombre"));
+                sopa.setId(rst.getInt("id"));
+                return sopa;
+            } catch (SQLException e) {
+                return null;
+            }
+        });
     }
 
-    public List<OpcionSopa> getSopas() {
-        return sopas;
+    public List<OpcionEnsalada> getEnsaladas() throws SQLException {
+        return ensaladadao.listar(rst -> {
+            try {
+                var ensalada = new OpcionEnsalada(rst.getString("nombre"));
+                ensalada.setId(rst.getInt("id"));
+                return ensalada;
+            } catch (SQLException e) {
+                return null;
+            }
+        });
     }
 
-    public List<OpcionEnsalada> getEnsaladas() {
-        return ensaladas;
+    public List<OpcionPrincipio> getPrincipios() throws SQLException {
+        return principiodao.listar(rst -> {
+            try {
+                var principio = new OpcionPrincipio(rst.getString("nombre"));
+                principio.setId(rst.getInt("id"));
+                return principio;
+            } catch (SQLException e) {
+                return null;
+            }
+        });
     }
 
-    public List<OpcionPrincipio> getPrincipios() {
-        return principios;
+    public List<Mesa> getListamesas() throws SQLException {
+        return mesadao.listar();
     }
 
-    public List<Mesa> getListamesas() {
-        return listamesas;
-    }
-
-    public void crearMesa() {
+    public void crearMesa() throws SQLException {
         // pedir informacion para crear la mesa
         Mesa mesa = mesavista.pedirInformacionMesa();
         // almacenar la mesa
-        this.listamesas.add(mesa);
+        this.mesadao.guardar(mesa);
         // lsitar las mesas en el sistema
-        mesavista.mostrarMesas(listamesas);
+        mesavista.mostrarMesas(getListamesas());
     }
 
     public void agregarPedido(Mesa mesa) {
 
-        // pedir infomracion del pedido
-        Pedido pedido = pedidovista.pedirInformacionPedido();
-        // agregar pedido a la mesa
-        mesa.agregarPedido(pedido);
-        // mostrar confirmacion
-        pedidovista.mostrarMensaje("El pedido ha sido agregado");
+        try {
+            // pedir infomracion del pedido
+            Pedido pedido = pedidovista.pedirInformacionPedido();
+            // agregar pedido a la mesa
+            pedidoDao.guardar(mesa, pedido);
+            // mostrar confirmacion
+            pedidovista.mostrarMensaje("El pedido ha sido agregado");
+        } catch (SQLException ex) {
 
+        }
     }
 
     public Mesa consultarMesa() {
-        return mesavista.consultarMesa();
+        try {
+            return mesavista.consultarMesa();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void entregarPedido(Mesa mesa) {
-        var pedido = mesavista.consultarPedidos(mesa);
-        pedido.entregarPedido();
+        try {
+            var pedidos = pedidoDao.listar_pedidos(mesa).stream()
+                    .filter(P -> P.getEstado() == EstadoPedido.SIN_ENTREGAR).collect(Collectors.toList());
+            var pedido = mesavista.consultarPedidos(pedidos);
+            pedido.entregarPedido();
+            pedidoDao.entregarPedido(pedido);
 
+            pedidovista.mostrarMensaje("El pedido ha sido entregado!!");
+        } catch (SQLException e) {
+
+        }
     }
 
     public void mostrarPedidos(Mesa mesa) {
-        mesavista.mostrarPedidos(mesa);
-    }
 
-    public void pagoDeMesa(Mesa mesa) {
-        var efectivo = mesavista.leerEfectivo();
         try {
-            var total = mesa.calcularValorMesa();
-            System.out.println(total);
-            if (efectivo < total) {
-                throw new PagoExcepcion();
-            }
-            mesavista.mostrarMensaje(String.format("La devuelta son: $ %,d", (efectivo - total)));
-            mesa.limpiarPedidos();
-        } catch (PagoExcepcion e) {
-            mesavista.mostrarMensaje(e.getMessage());
+            var pedidos = pedidoDao.listar_pedidos(mesa);
+            mesavista.mostrarPedidos(pedidos);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
     }
 
-    public void iniciarAplicacion() {
+    public void pagoDeMesa(Mesa mesa) {
+
+        try {
+
+            var pedidos = pedidoDao.listar_pedidos(mesa);
+
+            var total = pedidos.stream()
+                    .filter(Pedido -> Pedido.getEstado() == EstadoPedido.PENDIENTE_COBRAR)
+                    .map(Pedido -> Pedido.calcularValorPedido())
+                    .reduce((a, b) -> a + b)
+                    .orElse(0);
+            mesavista.mostrarMensaje(String.format("El total de la mesa es: %d", total));
+
+            var efectivo = mesavista.leerEfectivo();
+
+            
+
+            if (efectivo < total) {
+                throw new PagoExcepcion();
+            }
+            pedidoDao.eliminarPedidos(mesa);
+            mesavista.mostrarMensaje(String.format("La devuelta son: $ %,d", (efectivo - total)));
+            mesa.limpiarPedidos();
+        } catch (PagoExcepcion e) {
+            mesavista.mostrarMensaje(e.getMessage());
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    public void iniciarAplicacion() throws SQLException {
         menuPrincipal.iniciarAplicacion();
     }
 
     public void agregarAdicional(Mesa mesa) {
-        var pedido = mesavista.consultarPedidos(mesa);
-        var adicional = pedidoAdicionalVista.pedirInformacionPedidoAdicional();
-        pedido.agregaradicionales(adicional);
+        // var pedido = mesavista.consultarPedidos(mesa);
+        // var adicional = pedidoAdicionalVista.pedirInformacionPedidoAdicional();
+        // pedido.agregaradicionales(adicional);
     }
 
 }
