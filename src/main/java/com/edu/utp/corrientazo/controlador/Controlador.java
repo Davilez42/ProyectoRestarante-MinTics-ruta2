@@ -220,7 +220,20 @@ public class Controlador {
     }
 
     public void agregarAdicional(Mesa mesa) {
-        // var pedido = mesavista.consultarPedidos(mesa);
+     
+        try {
+           var  pedidos = pedidoDao.listar_pedidos(mesa);
+            var pedido = mesavista.consultarPedidos(pedidos);
+            var Adicional =  pedidoAdicionalVista.pedirInformacionPedidoAdicional();
+            pedido.agregaradicionales(Adicional);
+            pedidoDao.guardarAdicionales(mesa, pedido);
+            pedidovista.mostrarMensaje("El pedido Adicional fue agreagado exitosamente!!");
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         // var adicional = pedidoAdicionalVista.pedirInformacionPedidoAdicional();
         // pedido.agregaradicionales(adicional);
     }
