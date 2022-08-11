@@ -1,5 +1,7 @@
 package com.edu.utp.corrientazo.modelo;
 
+import java.util.Objects;
+
 public class OpcionJugo {
     private Integer id;
     private String nombre;
@@ -25,6 +27,31 @@ public class OpcionJugo {
     public String toString() {
         // TODO Auto-generated method stub
         return getNombre();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OpcionJugo other = (OpcionJugo) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
     }
     
 }

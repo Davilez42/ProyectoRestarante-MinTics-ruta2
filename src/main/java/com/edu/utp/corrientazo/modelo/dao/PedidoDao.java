@@ -67,7 +67,7 @@ public class PedidoDao {
                     ensalada.setId(rst.getInt("id_ensalada"));
                 }
 
-                var almuerzo = new Corrientazo(rst.getInt("precio"), sopa, carne, principio, jugo);
+                var almuerzo = new Corrientazo(rst.getInt("precio"), sopa, carne, principio, jugo, ensalada);
 
                 var pedido = new Pedido(rst.getString("cliente"), almuerzo);
                 pedido.setId(rst.getInt("id_pedido"));
@@ -240,11 +240,11 @@ public class PedidoDao {
         PreparedStatement pstatement4 = null;
         PreparedStatement pstatement3 = null;
         try {
-
+            var indice_ultimo = pedido.getAdicionales().size()-1;
             pstatement3 = JDBCutilites.getConnection()
                     .prepareStatement("INSERT into Adicional(id,precio,nombre) VALUES(?,?,?)");
-            pedido.getAdicionales().get(0).setId(generarConsecutivo("Adicional"));
-            var indice_ultimo = pedido.getAdicionales().size()-1;
+            pedido.getAdicionales().get(indice_ultimo).setId(generarConsecutivo("Adicional"));
+            
             pstatement3.setInt(1, pedido.getAdicionales().get(indice_ultimo).getId());
             pstatement3.setInt(2, pedido.getAdicionales().get(indice_ultimo).getPrecio());
             pstatement3.setString(3, pedido.getAdicionales().get(indice_ultimo).getNombre());
